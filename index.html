@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>TRANSAS</title>
+  <link rel="stylesheet" href="css/game.css" />
+</head>
+<body>
+  <div id="wrap">
+    <div id="frame">
+      <canvas id="game" width="960" height="540"></canvas>
+
+      <div id="ui">
+        <!-- Loading inicial -->
+        <div id="loadUI" class="overlay visible">
+          <div class="glitch-title">TRANSAS</div>
+          <div class="subtitle" id="loadTxt">Cargando assets…</div>
+        </div>
+
+        <!-- Mini loading entre escenarios -->
+        <div id="sceneLoad" class="overlay">
+          <div class="spin"></div>
+          <div class="msg" id="sceneLoadMsg">Cargando…</div>
+          <div class="sub" id="sceneLoadSub"></div>
+        </div>
+
+        <!-- Title -->
+        <div id="titleUI" class="overlay">
+          <div class="glitch-title">TRANSAS</div>
+          <div class="subtitle">
+            Monoambiente + calle (mapas anchos).<br>
+            Encontrá plata y el celu, comprá en el kiosco,<br>
+            mandá mensaje al transa y esperá en la esquina.
+          </div>
+          <button class="btn" id="btnStart">JUGAR</button>
+          <div class="hint hint-desktop">
+            ← → / A D mover · ↑ W Espacio saltar · E interactuar<br>
+            C mensaje · 1-4 inventario · Z strobe (no acelera)
+          </div>
+          <div class="hint hint-mobile">
+            Controles táctiles en pantalla · tocá inventario para usar<br>
+            Landscape recomendado
+          </div>
+        </div>
+
+        <!-- HUD -->
+        <div id="hud">
+          <div class="badge money">💵 <strong id="moneyTxt">$8000</strong></div>
+          <div class="badge" id="locBadge">Monoambiente</div>
+          <div class="badge" id="invHint">Inventario: 1-4 para usar</div>
+        </div>
+
+        <div id="invBar"></div>
+        <button class="clickable" id="soundBtn" type="button" title="Sonido">🔊</button>
+
+        <div id="timerPanel">
+          <div class="label">ESPERANDO AL TRANSA</div>
+          <div class="clock" id="timerClock">10:00</div>
+          <div class="track"><div class="fill" id="timerFill"></div></div>
+          <div class="note">Timer real · 10 min · Z = strobe (no acelera el reloj)</div>
+        </div>
+
+        <div id="prompt">[E] Interactuar</div>
+
+        <div id="dialog">
+          <div class="who" id="dialogWho">VOS</div>
+          <div class="txt" id="dialogTxt"></div>
+          <div class="skip" id="dialogSkip">ENTER / CLICK</div>
+        </div>
+
+        <!-- Shop -->
+        <div id="shopUI" class="overlay">
+          <div class="panel">
+            <h2>🛒 EL GEVI · MAXIKIOSCO</h2>
+            <div class="bal">Tu plata: <span id="shopBal">$8000</span></div>
+            <div id="shopList"></div>
+            <button class="btn ghost" id="btnCloseShop" type="button">CERRAR</button>
+          </div>
+        </div>
+
+        <!-- End -->
+        <div id="endUI" class="overlay">
+          <div class="big">MISIÓN CUMPLIDA</div>
+          <div class="sub">El transa llegó con la merca. Diez minutos y listo.</div>
+          <button class="btn" id="btnRestart" type="button">JUGAR DE NUEVO</button>
+        </div>
+
+        <!-- Controles táctiles (solo mobile / touch) -->
+        <div id="touchPad" class="touch-pad" aria-hidden="true">
+          <div class="touch-cluster touch-left">
+            <button type="button" class="tbtn" data-key="a" aria-label="Izquierda">◀</button>
+            <button type="button" class="tbtn" data-key="d" aria-label="Derecha">▶</button>
+          </div>
+          <div class="touch-cluster touch-right">
+            <button type="button" class="tbtn tbtn-jump" data-key=" " aria-label="Saltar">⬆</button>
+            <button type="button" class="tbtn tbtn-act" data-key="e" aria-label="Interactuar">E</button>
+            <button type="button" class="tbtn" data-key="c" aria-label="Mensaje">📞</button>
+            <button type="button" class="tbtn tbtn-z" data-key="z" aria-label="Strobe">Z</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Módulos (orden importa) -->
+  <script src="js/config.js"></script>
+  <script src="js/assets.js"></script>
+  <script src="js/input.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/scenes.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/systems.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
