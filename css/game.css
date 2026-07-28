@@ -194,54 +194,71 @@ canvas {
   left: 10px;
   bottom: 12px;
   display: none;
-  gap: 6px;
+  gap: 8px;
   z-index: 6;
   pointer-events: auto;
 }
 
 #invBar.visible { display: flex; }
+#invBar.empty { display: none !important; }
 
 .inv-slot {
-  width: 54px;
-  height: 64px;
-  background: rgba(10, 6, 18, 0.9);
-  border: 2px solid #555;
+  width: 56px;
+  height: 68px;
+  background: rgba(10, 6, 18, 0.92);
+  border: 2px solid #00f5d4;
+  box-shadow: 2px 2px 0 #ff2d95;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   position: relative;
+  padding: 0;
+  font-family: inherit;
+  color: #ffe66d;
+  border-radius: 10px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.inv-slot.has {
-  border-color: #00f5d4;
-  box-shadow: 2px 2px 0 #ff2d95;
-}
+.inv-slot.has { /* always has when rendered */ }
 
 .inv-slot img {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   object-fit: contain;
+  pointer-events: none;
 }
 
 .inv-slot .qty {
   position: absolute;
-  right: 3px;
-  bottom: 2px;
-  font-size: 9px;
+  right: 4px;
+  top: 3px;
+  font-size: 10px;
+  font-weight: 700;
   color: #ffe66d;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 1px 4px;
+  border-radius: 4px;
+  pointer-events: none;
 }
 
-.inv-slot .key {
-  position: absolute;
-  left: 3px;
-  top: 2px;
-  font-size: 8px;
+.inv-slot .use-hint {
+  font-size: 7px;
   color: #00f5d4;
+  margin-top: 2px;
+  letter-spacing: 0.3px;
+  pointer-events: none;
+  opacity: 0.85;
 }
 
-.inv-slot:hover.has { border-color: #ffe66d; }
+.inv-slot:hover,
+.inv-slot:active {
+  border-color: #ffe66d;
+  background: rgba(255, 45, 149, 0.35);
+  transform: scale(1.06);
+}
 
 /* Sound */
 #soundBtn {
@@ -468,55 +485,91 @@ canvas {
 
 .touch-cluster {
   position: absolute;
-  bottom: max(12px, env(safe-area-inset-bottom, 12px));
+  bottom: max(14px, env(safe-area-inset-bottom, 14px));
   display: flex;
-  gap: 10px;
+  gap: 12px;
   pointer-events: auto;
+  align-items: flex-end;
 }
 
-.touch-left { left: max(10px, env(safe-area-inset-left, 10px)); }
+.touch-left {
+  left: max(12px, env(safe-area-inset-left, 12px));
+}
+
 .touch-right {
-  right: max(10px, env(safe-area-inset-right, 10px));
-  flex-wrap: wrap;
-  max-width: 168px;
-  justify-content: flex-end;
+  right: max(12px, env(safe-area-inset-right, 12px));
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 
 .tbtn {
-  width: 58px;
-  height: 58px;
+  width: 72px;
+  height: 72px;
   border: 2px solid #00f5d4;
-  border-radius: 14px;
-  background: rgba(10, 6, 18, 0.72);
+  border-radius: 18px;
+  background: rgba(10, 6, 18, 0.78);
   color: #ffe66d;
   font-family: inherit;
-  font-size: 20px;
   font-weight: 700;
-  box-shadow: 2px 2px 0 rgba(255, 45, 149, 0.55);
+  box-shadow: 3px 3px 0 rgba(255, 45, 149, 0.5);
   touch-action: none;
   -webkit-user-select: none;
   user-select: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 4px;
+}
+
+.tbtn-ico {
+  font-size: 22px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.tbtn-lab {
+  font-size: 9px;
+  letter-spacing: 0.4px;
+  color: #00f5d4;
+  text-transform: lowercase;
+  pointer-events: none;
+  opacity: 0.95;
 }
 
 .tbtn.active,
 .tbtn:active {
-  background: rgba(255, 45, 149, 0.55);
+  background: rgba(255, 45, 149, 0.62);
   border-color: #ffe66d;
-  transform: scale(0.96);
+  transform: scale(0.94);
+}
+
+.tbtn-move {
+  width: 76px;
+  height: 76px;
 }
 
 .tbtn-jump {
-  background: rgba(0, 245, 212, 0.18);
+  background: rgba(0, 245, 212, 0.2);
   border-color: #ffe66d;
+  grid-column: 1 / -1;
+  width: 100%;
+  height: 64px;
 }
 
 .tbtn-act {
-  background: rgba(255, 230, 109, 0.16);
+  background: rgba(255, 230, 109, 0.2);
+  border-color: #ffe66d;
+}
+
+.tbtn-call {
+  background: rgba(0, 245, 212, 0.12);
 }
 
 .tbtn-z {
-  font-size: 16px;
-  opacity: 0.9;
+  opacity: 0.95;
 }
 
 /* ─── Mobile / touch layout ──────────────────────────────────── */
@@ -536,9 +589,32 @@ body.is-touch #soundBtn {
 body.is-touch #invBar {
   left: 50%;
   bottom: auto;
-  top: max(58px, calc(env(safe-area-inset-top, 0px) + 52px));
+  top: max(52px, calc(env(safe-area-inset-top, 0px) + 48px));
   transform: translateX(-50%);
   z-index: 13;
+  gap: 10px;
+}
+
+body.is-touch #invBar:not(.empty) {
+  padding: 6px 8px;
+  background: rgba(10, 6, 18, 0.55);
+  border-radius: 14px;
+  border: 1px solid rgba(0, 245, 212, 0.35);
+}
+
+body.is-touch .inv-slot {
+  width: 62px;
+  height: 72px;
+  border-radius: 12px;
+}
+
+body.is-touch .inv-slot img {
+  width: 38px;
+  height: 38px;
+}
+
+body.is-touch .inv-slot .use-hint {
+  font-size: 8px;
 }
 
 body.is-touch #hud {
@@ -601,27 +677,39 @@ body.is-touch .shop-row button {
   padding: 10px 12px;
 }
 
-body.is-touch .inv-slot {
-  width: 48px;
-  height: 56px;
-}
-
 body.is-touch .btn {
   min-height: 48px;
   padding: 14px 28px;
 }
 
+body.is-touch #prompt {
+  bottom: 150px;
+}
+
+body.is-touch #dialog {
+  bottom: 140px;
+}
+
 /* Landscape phones: controles un poco más chicos */
 @media (max-height: 420px) and (orientation: landscape) {
   body.is-touch .tbtn {
-    width: 48px;
-    height: 48px;
-    font-size: 16px;
-    border-radius: 12px;
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
   }
-  body.is-touch #prompt { bottom: 100px; }
-  body.is-touch #dialog { bottom: 92px; min-height: 56px; }
-  body.is-touch #invBar { top: 46px; }
+  body.is-touch .tbtn-move {
+    width: 60px;
+    height: 60px;
+  }
+  body.is-touch .tbtn-jump {
+    height: 52px;
+  }
+  body.is-touch .tbtn-ico { font-size: 18px; }
+  body.is-touch .tbtn-lab { font-size: 8px; }
+  body.is-touch #prompt { bottom: 110px; }
+  body.is-touch #dialog { bottom: 100px; min-height: 56px; }
+  body.is-touch #invBar { top: 44px; }
+  body.is-touch .inv-slot { width: 52px; height: 60px; }
 }
 
 /* Portrait: aviso suave — el juego se ve mejor horizontal */

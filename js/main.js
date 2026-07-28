@@ -85,7 +85,7 @@
           this.say(
             'VOS',
             left > 0
-              ? `Esperando. Faltan ${Sys.fmtMs(left)}.\nApretá Z para esperar rápido.`
+              ? `Esperando. Faltan ${Sys.fmtMs(left)}.\nApretå Z para esperar råpido.`
               : 'Debería estar por llegar…'
           );
         } else {
@@ -223,10 +223,7 @@
       if (state.dialog) UI.openDialog(state.dialog.who, state.dialog.text);
     }
     if (Input.just('h')) state.debugHitboxes = !state.debugHitboxes;
-    if (Input.just('1')) { Sys.useItem(state, player, PlayerAPI, 'redpoint'); syncDialogHud(); }
-    if (Input.just('2')) { Sys.useItem(state, player, PlayerAPI, 'chicles'); syncDialogHud(); }
-    if (Input.just('3')) { Sys.useItem(state, player, PlayerAPI, 'birra'); syncDialogHud(); }
-    if (Input.just('4')) { Sys.useItem(state, player, PlayerAPI, 'pepsi'); syncDialogHud(); }
+    // Inventario: solo click/touch en íconos (no teclas 1–4)
   }
 
   function syncDialogHud() {
@@ -334,9 +331,12 @@
       const on = Audio.toggle();
       UI.setSoundIcon(on);
     });
-    e.invBar.addEventListener('click', (ev) => {
+    // Consumir item: un solo handler (pointerup) evita doble gasto en mobile
+    e.invBar.addEventListener('pointerup', (ev) => {
+      if (ev.button !== undefined && ev.button !== 0) return;
       const slot = ev.target.closest('.inv-slot');
       if (!slot || !slot.dataset.item) return;
+      ev.preventDefault();
       Sys.useItem(state, player, PlayerAPI, slot.dataset.item);
       syncDialogHud();
     });

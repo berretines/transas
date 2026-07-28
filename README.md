@@ -1,7 +1,7 @@
 # TRANSAS
 
 Plataformer 2D argento en el navegador.  
-**HTML5 Canvas + JavaScript puro** (sin frameworks). Assets con Grok Imagine.
+**HTML5 Canvas + JavaScript puro** (sin frameworks).
 
 ---
 
@@ -17,8 +17,10 @@ python3 -m http.server 8080
 
 ### Mobile / touch
 
-- Detecta touch y muestra **pad en pantalla**: ◀ ▶ · ⬆ saltar · **E** · 📞 mensaje · **Z** strobe  
-- Inventario: **tocá** el ícono (igual que teclas 1–4)  
+- Detecta touch y muestra **pad en pantalla**: ◀ ▶ · ⬆ saltar · **E** · 📞 mensaje · **Z**  
+
+- Inventario: solo se ven íconos **ya comprados**; **tocá** el ícono para consumir  
+
 - Diálogos / shop: táctiles  
 - Recomendado en **horizontal**  
 - Abrí la URL del servidor desde el celu (misma Wi‑Fi), ej. `http://192.168.x.x:8080`
@@ -33,8 +35,8 @@ python3 -m http.server 8080
 | ↑ / W / Espacio | Saltar |
 | **E** | Interactuar (objetos, billetes, puerta, kiosco) |
 | **C** | Mandar mensaje al transa (con el celu) |
-| **1–4** | Usar inventario (Red Point / chicles / birra / Pepsi) |
-| **Z** | Strobe visual (no acelera el timer de 10 min) |
+| Click / toque en ícono | Usar item del inventario (solo si lo compraste) |
+| **Z** | *Apretå Z para esperar råpido* |
 | **H** | Debug: ver hitboxes |
 | 🔊 | Sonido on/off |
 
@@ -139,9 +141,8 @@ Consumir un item reproduce un sprite de acción; **se puede caminar** mientras d
 
 1. Encontrar celu en la ropa → **C** mandar mensaje.  
 2. Arranca timer **real de 10 minutos**.  
-3. El diálogo dice *“Apretá Z para esperar rápido”*.  
-4. **Z solo hace strobe visual** — no cambia `messageAt` ni el reloj.  
-5. A los 10 min el amigo camina hasta la esquina → victoria.
+3. El diálogo dice siempre *“Apretå Z para esperar råpido”* (el chiste; no se explica).  
+4. A los 10 min el amigo camina hasta la esquina → victoria.
 
 Debug consola:
 

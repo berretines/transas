@@ -36,10 +36,10 @@ window.TRANSAS_CONFIG = Object.freeze({
   // Tienda
   // pack = cuántas unidades entran al inventario por compra
   SHOP: Object.freeze([
-    Object.freeze({ id: 'redpoint', name: 'Red Point', price: 2000, icon: 'item_redpoint', key: '1', pack: 20 }),
-    Object.freeze({ id: 'chicles',  name: 'Chicles',   price: 500,  icon: 'item_chicles',  key: '2', pack: 5 }),
-    Object.freeze({ id: 'birra',    name: 'Birra',     price: 2500, icon: 'item_birra',    key: '3', pack: 1 }),
-    Object.freeze({ id: 'pepsi',    name: 'Pepsi',     price: 1500, icon: 'item_pepsi',    key: '4', pack: 1 }),
+    Object.freeze({ id: 'redpoint', name: 'Red Point', price: 2000, icon: 'item_redpoint', pack: 20 }),
+    Object.freeze({ id: 'chicles',  name: 'Chicles',   price: 500,  icon: 'item_chicles',  pack: 5 }),
+    Object.freeze({ id: 'birra',    name: 'Birra',     price: 2500, icon: 'item_birra',    pack: 1 }),
+    Object.freeze({ id: 'pepsi',    name: 'Pepsi',     price: 1500, icon: 'item_pepsi',    pack: 1 }),
   ]),
 
   // Assets (rutas relativas a index.html)

@@ -38,12 +38,12 @@
           </div>
           <button class="btn" id="btnStart">JUGAR</button>
           <div class="hint hint-desktop">
-            ← → / A D mover · ↑ W Espacio saltar · E interactuar<br>
-            C mensaje · 1-4 inventario · Z strobe (no acelera)
+            ← → mover · Espacio saltar · E interactuar · C mensaje<br>
+            Click en íconos del inventario para usar · Apretå Z para esperar råpido
           </div>
           <div class="hint hint-mobile">
-            Controles táctiles en pantalla · tocá inventario para usar<br>
-            Landscape recomendado
+            ◀▶ mover · ⬆ saltar · E usar · 📞 mensaje · Z esperar<br>
+            Tocá los íconos del inventario para consumir · horizontal
           </div>
         </div>
 
@@ -61,7 +61,7 @@
           <div class="label">ESPERANDO AL TRANSA</div>
           <div class="clock" id="timerClock">10:00</div>
           <div class="track"><div class="fill" id="timerFill"></div></div>
-          <div class="note">Timer real · 10 min · Z = strobe (no acelera el reloj)</div>
+          <div class="note">Apretå Z para esperar råpido</div>
         </div>
 
         <div id="prompt">[E] Interactuar</div>
@@ -92,14 +92,32 @@
         <!-- Controles táctiles (solo mobile / touch) -->
         <div id="touchPad" class="touch-pad" aria-hidden="true">
           <div class="touch-cluster touch-left">
-            <button type="button" class="tbtn" data-key="a" aria-label="Izquierda">◀</button>
-            <button type="button" class="tbtn" data-key="d" aria-label="Derecha">▶</button>
+            <button type="button" class="tbtn tbtn-move" data-key="a" aria-label="Izquierda">
+              <span class="tbtn-ico">◀</span>
+              <span class="tbtn-lab">izq</span>
+            </button>
+            <button type="button" class="tbtn tbtn-move" data-key="d" aria-label="Derecha">
+              <span class="tbtn-ico">▶</span>
+              <span class="tbtn-lab">der</span>
+            </button>
           </div>
           <div class="touch-cluster touch-right">
-            <button type="button" class="tbtn tbtn-jump" data-key=" " aria-label="Saltar">⬆</button>
-            <button type="button" class="tbtn tbtn-act" data-key="e" aria-label="Interactuar">E</button>
-            <button type="button" class="tbtn" data-key="c" aria-label="Mensaje">📞</button>
-            <button type="button" class="tbtn tbtn-z" data-key="z" aria-label="Strobe">Z</button>
+            <button type="button" class="tbtn tbtn-jump" data-key=" " aria-label="Saltar">
+              <span class="tbtn-ico">⬆</span>
+              <span class="tbtn-lab">saltar</span>
+            </button>
+            <button type="button" class="tbtn tbtn-act" data-key="e" aria-label="Interactuar">
+              <span class="tbtn-ico">✋</span>
+              <span class="tbtn-lab">usar</span>
+            </button>
+            <button type="button" class="tbtn tbtn-call" data-key="c" aria-label="Mensaje">
+              <span class="tbtn-ico">📞</span>
+              <span class="tbtn-lab">msg</span>
+            </button>
+            <button type="button" class="tbtn tbtn-z" data-key="z" aria-label="Apretå Z para esperar råpido">
+              <span class="tbtn-ico">Z</span>
+              <span class="tbtn-lab">esperar</span>
+            </button>
           </div>
         </div>
       </div>

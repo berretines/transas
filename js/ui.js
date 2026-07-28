@@ -122,14 +122,14 @@ window.TRANSAS_UI = (() => {
       e.invHint.textContent = state.inv.phone
         ? state.flags.messaged
           ? '📱 mensaje ok'
-          : '📱 usá 📞'
+          : '📱 📞 mensaje'
         : 'Sin celu';
     } else {
       e.invHint.textContent = state.inv.phone
         ? state.flags.messaged
           ? '📱 CELU · mensaje ok'
-          : '📱 CELU · [C] mensaje'
-        : 'Sin celu';
+          : '📱 CELU · C mensaje'
+        : 'Sin celu · inventarios al comprar';
     }
     renderInv(state);
     updateTimer(state);
@@ -139,19 +139,25 @@ window.TRANSAS_UI = (() => {
     const e = els();
     const slots = C().SHOP;
     e.invBar.innerHTML = '';
+    let any = false;
     for (const s of slots) {
       const qty = state.inv[s.id] || 0;
-      const div = document.createElement('div');
-      div.className = 'inv-slot' + (qty > 0 ? ' has' : '');
-      div.innerHTML = `
-        <span class="key">${s.key}</span>
-        <img src="assets/${s.icon}.png" alt="" draggable="false" />
-        <span class="qty">${qty > 0 ? '×' + qty : ''}</span>`;
-      if (qty > 0) {
-        div.dataset.item = s.id;
-      }
-      e.invBar.appendChild(div);
+      if (qty <= 0) continue; // solo aparecen si ya los compraste
+      any = true;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'inv-slot has';
+      btn.dataset.item = s.id;
+      btn.title = `Usar ${s.name}`;
+      btn.setAttribute('aria-label', `Usar ${s.name}, ${qty}`);
+      btn.innerHTML = `
+        <img src="assets/${s.icon}.png" alt="${s.name}" draggable="false" />
+        <span class="qty">×${qty}</span>
+        <span class="use-hint">${isTouch ? 'tocá' : 'click'}</span>`;
+      e.invBar.appendChild(btn);
     }
+    // Ocultar barra si no hay items
+    e.invBar.classList.toggle('empty', !any);
   }
 
   function updateTimer(state) {

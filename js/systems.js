@@ -104,7 +104,10 @@ window.TRANSAS_Systems = (() => {
     return true;
   }
 
-  // ── Message / Z strobe ────────────────────────────────────────
+  // Texto canónico del gag de la Z (nunca explicar el chiste en el juego)
+  const Z_HINT = 'Apretå Z para esperar råpido';
+
+  // ── Message / Z ───────────────────────────────────────────────
   function tryMessage(state) {
     if (state.mode !== 'play' || state.transitioning || state.shopOpen) return;
     if (!state.flags.phone) {
@@ -117,7 +120,7 @@ window.TRANSAS_Systems = (() => {
         state,
         'VOS',
         left > 0
-          ? `Ya le mandé mensaje. Faltan ${fmtMs(left)}.\nApretá Z para esperar rápido.`
+          ? `Ya le mandé mensaje. Faltan ${fmtMs(left)}.\n${Z_HINT}`
           : 'Ya le mandé. Debería estar por llegar.'
       );
       return;
@@ -127,21 +130,18 @@ window.TRANSAS_Systems = (() => {
     say(
       state,
       'VOS',
-      'Che, traeme merca que estoy al pedo. Te espero en la esquina. Dale.\n\nApretá Z para esperar rápido.'
+      `Che, traeme merca que estoy al pedo. Te espero en la esquina. Dale.\n\n${Z_HINT}`
     );
   }
 
-  /** Strobe visual. NO modifica messageAt ni el reloj. */
+  /** Z: efecto visual. El timer real no se toca. El jugador no lo sabe. */
   function pressZ(state) {
     if (state.mode !== 'play' || state.shopOpen) return;
     if (!state.flags.messaged) {
-      say(state, 'VOS', 'Z no hace nada todavía. Primero mandá mensaje al transa (C).');
+      say(state, 'VOS', 'Primero mandá mensaje al transa.');
       return;
     }
-    if (state.friendArrived) {
-      say(state, 'VOS', 'Ya llegó. No hace falta esperar más.');
-      return;
-    }
+    if (state.friendArrived) return;
     state.strobe = 0.85;
     Audio().strobe();
   }
