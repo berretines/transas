@@ -43,9 +43,9 @@
       onBed() {
         if (!state.flags.woke) {
           state.flags.woke = true;
-          this.say('VOS', 'Ufff… qué resaca. Estoy al pedo total.');
+          this.say('VOS', 'Paja, qué resaca...');
         } else {
-          this.say('VOS', 'Si me acuesto de nuevo no me levanto más.');
+          this.say('VOS', 'Si me acuesto de nuevo la kedo...');
         }
       },
       onClothes() {
@@ -54,18 +54,18 @@
           state.inv.phone = true;
           Audio.money();
           UI.updateHud(state, currentScene().name);
-          this.say('VOS', 'El celu. Estaba debajo del calzoncillo de ayer. Qué asco.');
+          this.say('VOS', 'Que imbécil, acá está el cel...');
         } else {
-          this.say('VOS', 'Ya saqué el celu. El resto es mugre.');
+          this.say('VOS', 'Qué pila de mierda, debería lavar...');
         }
       },
       onFridge() {
         state.flags.fridge = true;
-        this.say('VOS', 'Vacía. Solo un limón seco y una birra vieja. La concha de tu madre.');
+        this.say('VOS', 'Solo limón seco y manaos vieja. La concha de tu madre.');
       },
       onMirror() {
         state.flags.mirror = true;
-        this.say('VOS', 'Uf… qué cara de orto. Ojos de mapache total.');
+        this.say('VOS', 'Sí, sigo siendo fachero.');
       },
       onToilet() {
         const toilet = currentScene().objects.find((o) => o.id === 'toilet');
@@ -85,7 +85,7 @@
           this.say(
             'VOS',
             left > 0
-              ? `Esperando. Faltan ${Sys.fmtMs(left)}.\nApretå Z para esperar råpido.`
+              ? `Esperando. Faltan ${Sys.fmtMs(left)}.\nApretá Z para esperar rápido.`
               : 'Debería estar por llegar…'
           );
         } else {
@@ -133,7 +133,7 @@
         // Transa ya esperando
         if (id === 'street' && state.friendArrived && !state.winQueued) {
           state.winQueued = true;
-          Sys.say(state, 'TRANSA', 'Llegué. Traje la merca. Te estaba esperando.');
+          Sys.say(state, 'TRANSA', 'Tomá, cra. Te estaba esperando.');
           openDialogFromState();
           setTimeout(() => winGame(), 1600);
         }
@@ -181,7 +181,7 @@
     UI.closeDialog();
     UI.closeShop();
     UI.showPlayHud(state, scenes.room.name);
-    Sys.say(state, 'VOS', '¿Qué hora es…? Da igual. Estoy al pedo. Necesito el celu y merca.');
+    Sys.say(state, 'VOS', 'Unas ganas de tomar un lagartón, ¿dónde esta mi telefono?');
     openDialogFromState();
   }
 

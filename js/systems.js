@@ -27,6 +27,12 @@ window.TRANSAS_Systems = (() => {
       h: cfg.PLAYER_H,
       visible: false,
       walking: false,
+      facing: -1, // llega desde la derecha mirando a la izquierda
+      // animación de caminata
+      frame: 0,
+      frameT: 0,
+      bob: 0,
+      speed: 95, // px/s un poco más vivo
     };
   }
 
@@ -84,7 +90,7 @@ window.TRANSAS_Systems = (() => {
     }
     PlayerAPI.startAction(player, 'pee', 2.8);
     state.flags.peed = true;
-    say(state, 'VOS', 'Ahhhh… qué alivio. El inodoro da asco, pero bueno.');
+    say(state, 'VOS', 'Ahhhh… qué lindo mear.');
     Audio().use();
   }
 
@@ -111,7 +117,7 @@ window.TRANSAS_Systems = (() => {
   function tryMessage(state) {
     if (state.mode !== 'play' || state.transitioning || state.shopOpen) return;
     if (!state.flags.phone) {
-      say(state, 'VOS', 'No tengo el celu. Tiene que estar en la pila de ropa.');
+      say(state, 'VOS', 'No tengo el fono. Debe estar en algún lado...');
       return;
     }
     if (state.flags.messaged) {
@@ -130,7 +136,7 @@ window.TRANSAS_Systems = (() => {
     say(
       state,
       'VOS',
-      `Che, traeme merca que estoy al pedo. Te espero en la esquina. Dale.\n\n${Z_HINT}`
+      `¿Tenés para acercarme unito? ¿En 3 minutos? Joyaaa, te espero en la esquina.\n\n${Z_HINT}`
     );
   }
 
@@ -178,18 +184,45 @@ window.TRANSAS_Systems = (() => {
     if (left <= 0 && !friend.walking && !friend.visible) {
       friend.visible = true;
       friend.walking = true;
-      friend.x = C().WORLD_W + 40;
+      friend.facing = -1;
+      friend.frame = 0;
+      friend.frameT = 0;
+      friend.x = C().WORLD_W + 80;
       friend.y = C().FLOOR_Y - friend.h;
     }
   }
 
+  /**
+   * Caminata animada del transa (cycle de 4 frames: w1, w3, w2, w3).
+   */
   function updateFriendWalk(state, friend, dt, onArriveStreet, onArriveElsewhere) {
+    // idle suave cuando ya llegó (bob leve del bolso)
+    if (friend.visible && !friend.walking) {
+      friend.bob = Math.sin(state.time * 3) * 2;
+      return;
+    }
     if (!friend.walking) return;
-    friend.x -= 70 * dt;
+
+    const speed = friend.speed || 95;
+    friend.x -= speed * dt;
+    friend.facing = -1;
+
+    // ciclo de caminata
+    friend.frameT += dt;
+    const step = 0.14;
+    if (friend.frameT >= step) {
+      friend.frameT = 0;
+      friend.frame = (friend.frame + 1) % 4;
+    }
+    // bob vertical sutil al caminar
+    friend.bob = Math.abs(Math.sin(state.time * 12)) * 3;
+
     const meetX = 1100; // esquina / cebra frente al Gevi
     if (friend.x <= meetX) {
       friend.x = meetX;
       friend.walking = false;
+      friend.frame = 0;
+      friend.bob = 0;
       state.friendArrived = true;
       if (state.winQueued) return;
       if (state.sceneId === 'street' && state.mode === 'play') {

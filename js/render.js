@@ -99,16 +99,45 @@ window.TRANSAS_Render = (() => {
     }
   }
 
+  /**
+   * Sprite del transa:
+   *  - caminando: walk1 → walk3 → walk2 → walk3
+   *  - parado (llegó): idle con bolsita
+   * Los walk miran a la izquierda; idle con bag mira a la derecha → flip al idle.
+   */
+  function friendSpriteKey(friend) {
+    if (!friend.walking) return 'friendIdle';
+    const cycle = ['friendWalk1', 'friendWalk3', 'friendWalk2', 'friendWalk3'];
+    return cycle[friend.frame % cycle.length];
+  }
+
   function drawFriend(ctx, friend, camX, sceneId) {
     if (!friend.visible || sceneId !== 'street') return;
-    const im = Assets().get('friend');
+    const key = friendSpriteKey(friend);
+    const im = Assets().get(key) || Assets().get('friend') || Assets().get('friendIdle');
     if (!im) return;
     const cfg = C();
     const dh = cfg.FRIEND_DRAW_H;
-    const dw = dh * (im.width / im.height);
+    // canvas normalizado 420×900
+    const dw = dh * cfg.SPRITE_ASPECT;
+    const bob = friend.bob || 0;
     const drawX = friend.x + friend.w / 2 - dw / 2 - camX;
-    const drawY = friend.y + friend.h - dh;
-    drawSprite(ctx, im, drawX, drawY, dh, true);
+    const drawY = friend.y + friend.h - dh - bob;
+
+    // walk frames ya miran a la izquierda; idle (bag) mira a la derecha → flip
+    const flip = !friend.walking;
+    drawSprite(ctx, im, drawX, drawY, dh, flip);
+
+    // sombra suave bajo los pies
+    ctx.save();
+    ctx.globalAlpha = 0.25;
+    ctx.fillStyle = '#000';
+    const sx = friend.x + friend.w / 2 - camX;
+    const sy = friend.y + friend.h - 4;
+    ctx.beginPath();
+    ctx.ellipse(sx, sy, 28, 7, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
   }
 
   function drawPickups(ctx, scene, state, camX) {
@@ -234,7 +263,7 @@ window.TRANSAS_Render = (() => {
     if (state.mode === 'end') {
       const bg = Assets().get('bgStreet');
       if (bg) ctx.drawImage(bg, 0, 0, WORLD_W, H, 0, 0, W, H);
-      const fr = Assets().get('friend');
+      const fr = Assets().get('friendIdle') || Assets().get('friend');
       const idle = Assets().get('protaIdle');
       if (fr) drawSprite(ctx, fr, W / 2 + 40, H - C().FRIEND_DRAW_H - 28, C().FRIEND_DRAW_H, true);
       if (idle) drawSprite(ctx, idle, W / 2 - 150, H - C().PLAYER_DRAW_H - 28, C().PLAYER_DRAW_H, false);
