@@ -83,15 +83,30 @@ window.TRANSAS_Systems = (() => {
   }
 
   function startPeeing(state, player, PlayerAPI, toilet) {
+    if (player.action && player.action.type === 'pee') return;
+    const peeDur = 3.2;
+    const cfg = C();
     if (toilet) {
-      player.x = toilet.x + 20;
-      player.y = C().FLOOR_Y - player.h;
+      // 3/4 de espalda, a la izq. del bowl; chorro sale de la mano hacia el agua
+      player.x = toilet.x + toilet.w * 0.10 - player.w * 0.5;
+      player.y = cfg.FLOOR_Y - player.h;
       player.facing = 1;
+      player.vx = 0;
+      player.vy = 0;
+      const maxX = cfg.WORLD_W - player.w - 8;
+      player.x = Math.max(0, Math.min(maxX, player.x));
+      PlayerAPI.startAction(player, 'pee', peeDur, {
+        targetX: toilet.x + toilet.w * 0.50,
+        targetY: toilet.y + toilet.h * 0.58,
+        noFlip: true, // sprite ya mirando a la der. en 3/4 espalda
+        canWalk: false,
+      });
+    } else {
+      PlayerAPI.startAction(player, 'pee', peeDur, { noFlip: true, canWalk: false });
     }
-    PlayerAPI.startAction(player, 'pee', 2.8);
     state.flags.peed = true;
     say(state, 'VOS', 'Ahhhh… qué lindo mear.');
-    Audio().use();
+    Audio().pee(peeDur);
   }
 
   // ── Shop ──────────────────────────────────────────────────────

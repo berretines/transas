@@ -45,19 +45,20 @@ window.TRANSAS_Player = (() => {
     }
   }
 
-  function startAction(player, type, dur) {
+  function startAction(player, type, dur, extra) {
     player.action = {
       type,
       t: 0,
       dur,
       frame: 0,
       frameT: 0,
-      canWalk: true,
+      canWalk: type !== 'pee',
+      ...(extra || {}),
     };
   }
 
   /**
-   * Update físico. Las acciones de inventario NO bloquean el movimiento.
+   * Update físico. Inventario no bloquea el movimiento (salvo mear).
    */
   function update(player, dt, input, scene, opts) {
     const { PHYS, FLOOR_Y } = C();
@@ -71,7 +72,23 @@ window.TRANSAS_Player = (() => {
         player.action.frameT = 0;
         player.action.frame = (player.action.frame + 1) % 2;
       }
-      if (player.action.t >= player.action.dur) player.action = null;
+      if (player.action.t >= player.action.dur) {
+        if (player.action.type === 'pee' && opts.onPeeEnd) opts.onPeeEnd();
+        player.action = null;
+      }
+    }
+
+    // Mear: plantado (aunque haya diálogo)
+    const rooted = player.action && player.action.canWalk === false;
+    if (rooted) {
+      player.vx = 0;
+      player.anim = 'idle';
+      player.vy += PHYS.gravity * dt;
+      if (player.vy > 1000) player.vy = 1000;
+      player.y += player.vy * dt;
+      player.onGround = false;
+      resolve(player, scene.platforms, 'y');
+      return;
     }
 
     if (blocked) return;
@@ -93,7 +110,6 @@ window.TRANSAS_Player = (() => {
     }
     player.vx = Math.max(-PHYS.maxSpeed, Math.min(PHYS.maxSpeed, player.vx));
 
-    // En mobile no hay salto (solo desktop / teclado)
     if (!opts.noJump && !opts.inputLock && jumpPressed && player.onGround) {
       player.vy = -PHYS.jump;
       player.onGround = false;
@@ -127,17 +143,28 @@ window.TRANSAS_Player = (() => {
     }
   }
 
-  /** Qué imagen dibujar según estado */
+  /** Sprite: mear = parado de espaldas; fumar camina solo si se mueve */
   function spriteKey(player) {
+    const moving = player.anim === 'walk' && Math.abs(player.vx) > 25;
     if (player.action) {
       const f = player.action.frame;
       switch (player.action.type) {
-        case 'smoke': return f ? 'actSmoke2' : 'actSmoke1';
-        case 'chew':  return f ? 'actChew2' : 'actChew1';
-        case 'beer':  return 'actDrinkBeer';
-        case 'pepsi': return 'actDrinkPepsi';
-        case 'pee':   return f ? 'actPee2' : 'actPee1'; // frames alternados + stream en render
-        default: break;
+        case 'pee':
+          return 'actPee1';
+        case 'smoke':
+          if (moving) return player.walkFlip ? 'protaWalk' : 'protaIdle';
+          return f ? 'actSmoke2' : 'actSmoke1';
+        case 'chew':
+          if (moving) return player.walkFlip ? 'protaWalk' : 'protaIdle';
+          return f ? 'actChew2' : 'actChew1';
+        case 'beer':
+          if (moving) return player.walkFlip ? 'protaWalk' : 'protaIdle';
+          return 'actDrinkBeer';
+        case 'pepsi':
+          if (moving) return player.walkFlip ? 'protaWalk' : 'protaIdle';
+          return 'actDrinkPepsi';
+        default:
+          break;
       }
     }
     if (player.anim === 'walk') return player.walkFlip ? 'protaWalk' : 'protaIdle';

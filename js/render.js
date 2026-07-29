@@ -29,70 +29,70 @@ window.TRANSAS_Render = (() => {
     const im = Assets().get(key) || Assets().get('protaIdle');
     if (!im) return;
 
-    const flip = player.facing < 0;
+    // Sprite de meada (de espaldas): no flip
+    const noFlip = player.action && player.action.noFlip;
+    const flip = noFlip ? false : player.facing < 0;
     const dh = cfg.PLAYER_DRAW_H;
     const dw = dh * cfg.SPRITE_ASPECT;
     const drawX = player.x + player.w / 2 - dw / 2 - camX;
     const drawY = player.y + player.h - dh;
     drawSprite(ctx, im, drawX, drawY, dh, flip);
 
-    // Chorrito animado al mear (stream + gotas + splash)
-    if (player.action && player.action.type === 'pee' && player.action.t > 0.15 && player.action.t < 2.55) {
-      const dir = flip ? -1 : 1;
-      const sx = drawX + dw * (flip ? 0.40 : 0.58);
-      const sy = drawY + dh * 0.56;
-      const phase = player.action.t * 22;
-      const life = Math.min(1, (player.action.t - 0.15) / 0.25);
-
+    // Chorro: sale de la mano/zona de la vejiga (perfil 3/4 de espalda) → inodoro
+    if (player.action && player.action.type === 'pee' && player.action.t > 0.1) {
+      const a = player.action;
+      const fadeIn = Math.min(1, (a.t - 0.1) / 0.18);
+      const fadeOut = a.t > a.dur - 0.35 ? Math.max(0, (a.dur - a.t) / 0.35) : 1;
+      const life = fadeIn * fadeOut;
+      // mano tapando la entrepierna (sprite 3/4 de espalda, mirando a la der.)
+      const sx = drawX + dw * 0.58;
+      const sy = drawY + dh * 0.54;
+      let ex = sx + 48;
+      let ey = sy + 42;
+      if (a.targetX != null && a.targetY != null) {
+        ex = a.targetX - camX;
+        ey = a.targetY;
+      }
+      const phase = a.t * 22;
+      const n = 34;
       ctx.save();
-      for (let i = 0; i < 18; i++) {
-        const t = i / 18;
-        const wobble = Math.sin(phase + i * 0.85) * (1.8 + t * 2);
-        const px = sx + dir * (i * 2.6 + t * 4) + wobble;
-        const py = sy + i * 2.35 + Math.cos(phase * 0.7 + i) * 0.6;
-        const size = (3.2 - t * 1.2) * life;
-        ctx.globalAlpha = (0.95 - t * 0.35) * life;
-        ctx.fillStyle = i % 3 === 0 ? '#f5e07a' : i % 3 === 1 ? '#e8c84a' : '#d4b040';
-        ctx.fillRect(px, py, size, size + 0.5);
+      for (let i = 0; i < n; i++) {
+        const t = i / (n - 1);
+        const px = sx + (ex - sx) * t + Math.sin(phase + i * 0.65) * (1.0 * (1 - t));
+        const py = sy + (ey - sy) * t + t * t * 14;
+        const size = Math.max(1.2, (3.6 - t * 1.9) * life);
+        ctx.globalAlpha = (0.95 - t * 0.5) * life;
+        ctx.fillStyle = i % 3 === 0 ? '#f5e07a' : i % 3 === 1 ? '#e8c84a' : '#c9a832';
+        ctx.fillRect(px, py, size, size + 0.4);
       }
-      for (let i = 0; i < 6; i++) {
-        const g = (phase * 0.4 + i * 1.7) % 10;
-        ctx.globalAlpha = 0.55 * life;
-        ctx.fillStyle = '#f0d060';
+      ctx.globalAlpha = 0.65 * life;
+      for (let i = 0; i < 10; i++) {
+        ctx.fillStyle = i % 2 ? '#f0d060' : '#e8c84a';
         ctx.fillRect(
-          sx + dir * (8 + i * 3.5) + Math.sin(phase + i * 2) * 3,
-          sy + 18 + g * 2.2,
-          2,
-          2
-        );
-      }
-      const splashY = drawY + dh - 6;
-      const splashX = sx + dir * 38;
-      ctx.globalAlpha = 0.5 * life;
-      for (let i = 0; i < 5; i++) {
-        ctx.fillStyle = '#e8c84a';
-        ctx.fillRect(
-          splashX + Math.sin(phase + i * 1.3) * (4 + i * 2),
-          splashY + (i % 2),
+          ex + Math.sin(phase + i * 1.5) * (3 + i * 0.7),
+          ey + Math.cos(phase * 1.1 + i) * 2.2,
           2 + (i % 3),
           2
         );
       }
       ctx.restore();
-      ctx.globalAlpha = 1;
     }
 
-    // humo suave extra al fumar (el sprite ya trae cigarrillo)
-    if (player.action && player.action.type === 'smoke') {
+    // Humo solo si fuma y está quieto
+    if (
+      player.action &&
+      player.action.type === 'smoke' &&
+      !(player.anim === 'walk' && Math.abs(player.vx) > 25)
+    ) {
       const sx = drawX + dw * (flip ? 0.28 : 0.72);
       const sy = drawY + dh * 0.20;
       ctx.save();
-      ctx.globalAlpha = 0.35;
-      for (let i = 0; i < 4; i++) {
-        const rise = (player.action.t * 22 + i * 10) % 36;
-        ctx.fillStyle = i % 2 ? '#e8e8e8' : '#c8c8c8';
+      ctx.globalAlpha = 0.38;
+      for (let i = 0; i < 5; i++) {
+        const rise = (player.action.t * 18 + i * 11) % 40;
+        ctx.fillStyle = i % 2 ? '#ececec' : '#c8c8c8';
         ctx.beginPath();
-        ctx.arc(sx + Math.sin(player.action.t * 2.5 + i) * 6, sy - rise, 2.5 + i * 0.6, 0, Math.PI * 2);
+        ctx.arc(sx + Math.sin(player.action.t * 2.2 + i) * 6, sy - rise, 2.4 + i * 0.55, 0, Math.PI * 2);
         ctx.fill();
       }
       ctx.restore();

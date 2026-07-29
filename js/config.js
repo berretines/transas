@@ -11,12 +11,12 @@ window.TRANSAS_CONFIG = Object.freeze({
   WORLD_W: 1920,
   WORLD_H: 540,
 
-  // Piso y personaje
+  // Piso y personaje (apenas más altos que la base 210/200)
   FLOOR_Y: 478,
-  PLAYER_W: 48,
-  PLAYER_H: 96,
-  PLAYER_DRAW_H: 210,
-  FRIEND_DRAW_H: 200,
+  PLAYER_W: 50,
+  PLAYER_H: 100,
+  PLAYER_DRAW_H: 228,
+  FRIEND_DRAW_H: 216,
   // Sprites normalizados a 420×900
   SPRITE_ASPECT: 420 / 900,
 

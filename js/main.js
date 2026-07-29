@@ -133,9 +133,9 @@
         // Transa ya esperando
         if (id === 'street' && state.friendArrived && !state.winQueued) {
           state.winQueued = true;
+          state.pendingWin = true; // 5s después de que el user cierre el diálogo
           Sys.say(state, 'TRANSA', 'Tomá, cra. Te estaba esperando.');
           openDialogFromState();
-          setTimeout(() => winGame(), 1600);
         }
       }
     );
@@ -203,6 +203,13 @@
     UI.closeDialog();
     state.dialogLockUntil = 0;
     state.inputLock = 0.25;
+    // Tras cerrar el diálogo final del transa → 5s y cartel de fin
+    if (state.pendingWin && state.mode === 'play') {
+      state.pendingWin = false;
+      setTimeout(() => {
+        if (state.mode === 'play') winGame();
+      }, 5000);
+    }
   }
 
   function openDialogFromState() {
@@ -327,6 +334,7 @@
         inputLock: state.inputLock > 0,
         noJump: UI.isTouch,
         onJump: () => Audio.jump(),
+        onPeeEnd: () => Audio.stopPee(),
       });
 
       Sys.updateCamera(state, player);
@@ -336,9 +344,10 @@
         friend,
         dt,
         () => {
+          state.winQueued = true;
+          state.pendingWin = true; // gana 5s después de cerrar este diálogo
           Sys.say(state, 'TRANSA', 'Llegué. Traje la merca. No me digas que te dormiste de nuevo.');
           openDialogFromState();
-          setTimeout(() => { if (state.mode === 'play') winGame(); }, 1800);
         },
         () => {
           Sys.say(state, 'VOS', 'Creo que llegó… mejor salgo a la esquina.');
@@ -450,6 +459,7 @@
     e.soundBtn.addEventListener('click', () => {
       const on = Audio.toggle();
       UI.setSoundIcon(on);
+      if (!on) Audio.stopPee();
     });
     // Consumir item: un solo handler (pointerup) evita doble gasto en mobile
     e.invBar.addEventListener('pointerup', (ev) => {

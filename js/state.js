@@ -34,6 +34,7 @@ window.TRANSAS_State = (() => {
       messageAt: 0,
       friendArrived: false,
       winQueued: false,
+      pendingWin: false, // true tras diálogo del transa; win a los 5s de cerrarlo
     };
   }
 
