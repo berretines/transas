@@ -86,10 +86,13 @@ window.TRANSAS_Input = (() => {
       btn.addEventListener('contextmenu', (e) => e.preventDefault());
     });
 
-    // Evitar scroll/zoom con gestos en el juego
+    // Evitar scroll/zoom del juego, PERO permitir scroll en menús (kiosco, overlays)
     document.addEventListener(
       'touchmove',
       (e) => {
+        if (e.target.closest('.scrollable, #shopUI, #shopList, #shopUI .panel, #titleUI, #endUI')) {
+          return; // dejar scrollear el menú
+        }
         if (e.target.closest('#frame, #touchPad')) e.preventDefault();
       },
       { passive: false }

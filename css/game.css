@@ -413,16 +413,26 @@ canvas {
 /* Shop */
 #shopUI {
   justify-content: center;
+  align-items: center;
   background: rgba(6, 3, 12, 0.94);
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+  overflow: hidden;
+  padding: 12px;
 }
 
 #shopUI .panel {
   width: min(92%, 520px);
+  max-height: min(88vh, 640px);
   background: #12081c;
   border: 3px solid #ffe66d;
   box-shadow: 0 0 0 2px #ff2d95, 6px 6px 0 #00f5d4;
-  padding: 18px 16px 14px;
+  padding: 14px 14px 12px;
   text-align: left;
+  display: flex;
+  flex-direction: column;
+  touch-action: pan-y;
+  overflow: hidden;
 }
 
 #shopUI h2 {
@@ -430,32 +440,60 @@ canvas {
   font-size: 14px;
   margin-bottom: 6px;
   text-align: center;
+  flex-shrink: 0;
 }
 
 #shopUI .bal {
   text-align: center;
   color: #7dce82;
   font-size: 11px;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+
+/* Lista scrolleable (mobile touch) */
+#shopList {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  overscroll-behavior: contain;
+  margin-bottom: 10px;
+  padding-right: 2px;
+}
+
+#shopUI .shop-footer {
+  flex-shrink: 0;
+  padding-top: 4px;
+}
+
+#btnCloseShop {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 0;
 }
 
 .shop-row {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 8px;
+  padding: 12px 8px;
   border: 2px solid #333;
   margin-bottom: 8px;
   background: rgba(0, 0, 0, 0.35);
+  touch-action: manipulation;
 }
 
 .shop-row img {
   width: 40px;
   height: 40px;
   object-fit: contain;
+  flex-shrink: 0;
 }
 
-.shop-row .info { flex: 1; }
+.shop-row .info { flex: 1; min-width: 0; }
 .shop-row .name { color: #fff; font-size: 11px; margin-bottom: 4px; }
 .shop-row .price { color: #7dce82; font-size: 10px; }
 
@@ -463,11 +501,14 @@ canvas {
   font-family: inherit;
   font-size: 10px;
   font-weight: 700;
-  padding: 8px 10px;
+  padding: 10px 12px;
   border: 2px solid #00f5d4;
   background: #1a3040;
   color: #00f5d4;
   cursor: pointer;
+  touch-action: manipulation;
+  min-height: 44px;
+  flex-shrink: 0;
 }
 
 .shop-row button:disabled {
@@ -667,17 +708,45 @@ body.is-touch .overlay {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
+  pointer-events: auto;
+}
+
+body.is-touch #shopUI.overlay {
+  /* el scroll vive en #shopList, no en el overlay entero */
+  overflow: hidden;
+  padding: 0;
+}
+
+body.is-touch #shopUI {
+  touch-action: pan-y;
+  align-items: stretch;
+  justify-content: flex-end;
+  padding: 8px 8px max(10px, env(safe-area-inset-bottom, 10px));
 }
 
 body.is-touch #shopUI .panel {
-  width: min(96%, 520px);
-  max-height: 85vh;
-  overflow-y: auto;
+  width: 100%;
+  max-width: none;
+  max-height: min(78vh, 560px);
+  border-radius: 12px 12px 0 0;
+}
+
+body.is-touch #shopList {
+  max-height: none;
+  flex: 1 1 auto;
+  min-height: 120px;
+  padding-bottom: 8px;
 }
 
 body.is-touch .shop-row button {
-  min-height: 40px;
-  padding: 10px 12px;
+  min-height: 44px;
+  padding: 12px 14px;
+  font-size: 11px;
+}
+
+body.is-touch #btnCloseShop {
+  min-height: 52px;
+  font-size: 13px;
 }
 
 body.is-touch .btn {

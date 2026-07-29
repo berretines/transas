@@ -224,15 +224,31 @@ window.TRANSAS_UI = (() => {
           <div class="name">${item.name}${item.pack > 1 ? ' ×' + item.pack : ''}</div>
           <div class="price">$${item.price}</div>
         </div>
-        <button ${can ? '' : 'disabled'} data-id="${item.id}">COMPRAR</button>`;
-      row.querySelector('button').addEventListener('click', () => onBuy(item.id));
+        <button type="button" ${can ? '' : 'disabled'} data-id="${item.id}">COMPRAR</button>`;
+      const buyBtn = row.querySelector('button');
+      // click + pointerup para mobile sin perder el toque
+      const buy = (ev) => {
+        if (buyBtn.disabled) return;
+        ev.preventDefault();
+        ev.stopPropagation();
+        onBuy(item.id);
+      };
+      buyBtn.addEventListener('click', buy);
       e.shopList.appendChild(row);
     }
+    // volver arriba al abrir / reabrir
+    e.shopList.scrollTop = 0;
     show(e.shopUI, true);
+    showTouchPad(false);
   }
 
   function closeShop() {
     show(els().shopUI, false);
+    // reactivar pad si estamos en play (main lo sincroniza también)
+    const pad = els().touchPad;
+    if (pad && document.body.classList.contains('is-touch')) {
+      // main decide; acá solo no forzamos visible si no hay juego
+    }
   }
 
   function setSoundIcon(on) {

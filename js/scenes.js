@@ -47,14 +47,14 @@ window.TRANSAS_Scenes = (() => {
             id: 'posterB',
             name: 'Poster Boca',
             x: 235, y: 80, w: 165, h: 155,
-            interact: () => H.say('VOS', 'Boca… la mitad más uno. Hoy no gana ni el monoambiente.'),
+            interact: () => H.say('VOS', '¡Boquita, aguante el millo carajo!'),
           }),
           // Poster River: ~x405–535, y80–240
           obj({
             id: 'posterR',
             name: 'Poster River',
             x: 405, y: 78, w: 135, h: 165,
-            interact: () => H.say('VOS', 'River… el gallinero del barrio.'),
+            interact: () => H.say('VOS', 'River… somos la mitad mas unos.'),
           }),
           // Pila de ropa + bolsas: ~x500–720, y250–420
           obj({
@@ -132,7 +132,7 @@ window.TRANSAS_Scenes = (() => {
             id: 'graffiti',
             name: 'Graffiti',
             x: 250, y: 160, w: 790, h: 235,
-            interact: () => H.say('VOS', 'Graffiti del barrio. Colores, flechas y cero futuro. Clásico.'),
+            interact: () => H.say('VOS', 'Graffitardo. Colores y flechas... Los pibardos la rompen mal.'),
           }),
           // Esquina / cebra (vereda frente al Gevi): ~x1000–1250, y400–475
           obj({
@@ -154,7 +154,7 @@ window.TRANSAS_Scenes = (() => {
             id: 'busstop',
             name: 'Parada de bondi',
             x: 1545, y: 195, w: 320, h: 230,
-            interact: () => H.say('VOS', 'La parada. Hoy el bondi no pasa. Mejor.'),
+            interact: () => H.say('VOS', 'La parada... Ésta está parada.'),
           }),
           // Billetes en vereda
           obj({

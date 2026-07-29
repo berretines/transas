@@ -94,6 +94,7 @@
       },
       openShop() {
         state.shopOpen = true;
+        UI.showTouchPad(false);
         const refresh = () => {
           UI.openShop(state, (id) => {
             if (Sys.buyItem(state, id)) {
@@ -396,9 +397,26 @@
       state.mode = 'title';
       UI.showTitle();
     });
-    e.btnCloseShop.addEventListener('click', () => {
+    const closeShopFlow = (ev) => {
+      if (ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+      }
       state.shopOpen = false;
       UI.closeShop();
+      if (state.mode === 'play' && !state.transitioning) {
+        UI.showTouchPad(true);
+        UI.updateZButton(state);
+      }
+    };
+    e.btnCloseShop.addEventListener('click', closeShopFlow);
+    e.btnCloseShop.addEventListener('pointerup', (ev) => {
+      // Mobile: cerrar con toque confiable
+      if (ev.pointerType === 'touch' || ev.pointerType === 'pen') closeShopFlow(ev);
+    });
+    // Tocar el fondo oscuro del overlay también cierra
+    e.shopUI.addEventListener('pointerup', (ev) => {
+      if (ev.target === e.shopUI) closeShopFlow(ev);
     });
     // Cerrar diálogo SOLO con el botón OK (no con el mismo touch del mapa)
     if (e.btnCloseDialog) {
