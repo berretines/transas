@@ -17,12 +17,10 @@ python3 -m http.server 8080
 
 ### Mobile / touch
 
-- Detecta touch y muestra **pad en pantalla**: ◀ ▶ · ⬆ saltar · **E** · 📞 mensaje · **Z**  
-
-- Inventario: solo se ven íconos **ya comprados**; **tocá** el ícono para consumir  
-
-- Diálogos / shop: táctiles  
-- Recomendado en **horizontal**  
+- Pad táctil chico: **◀ ▶** mover · **📞** mensaje · **Z** esperar  
+- **Sin salto**; **tocá los objetos** del mapa para interactuar  
+- Inventario: solo íconos **comprados**; tocá el ícono para consumir  
+- Diálogos / shop táctiles · horizontal recomendado  
 - Abrí la URL del servidor desde el celu (misma Wi‑Fi), ej. `http://192.168.x.x:8080`
 
 ---

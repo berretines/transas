@@ -93,7 +93,8 @@ window.TRANSAS_Player = (() => {
     }
     player.vx = Math.max(-PHYS.maxSpeed, Math.min(PHYS.maxSpeed, player.vx));
 
-    if (!opts.inputLock && jumpPressed && player.onGround) {
+    // En mobile no hay salto (solo desktop / teclado)
+    if (!opts.noJump && !opts.inputLock && jumpPressed && player.onGround) {
       player.vy = -PHYS.jump;
       player.onGround = false;
       if (opts.onJump) opts.onJump();

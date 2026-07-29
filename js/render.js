@@ -82,19 +82,20 @@ window.TRANSAS_Render = (() => {
       ctx.globalAlpha = 1;
     }
 
-    // humo al fumar
+    // humo suave extra al fumar (el sprite ya trae cigarrillo)
     if (player.action && player.action.type === 'smoke') {
-      const sx = flip ? drawX + dw * 0.32 : drawX + dw * 0.68;
-      const sy = drawY + dh * 0.18;
-      ctx.globalAlpha = 0.4;
-      for (let i = 0; i < 5; i++) {
-        const rise = (player.action.t * 28 + i * 12) % 40;
-        ctx.fillStyle = i % 2 ? '#ddd' : '#bbb';
+      const sx = drawX + dw * (flip ? 0.28 : 0.72);
+      const sy = drawY + dh * 0.20;
+      ctx.save();
+      ctx.globalAlpha = 0.35;
+      for (let i = 0; i < 4; i++) {
+        const rise = (player.action.t * 22 + i * 10) % 36;
+        ctx.fillStyle = i % 2 ? '#e8e8e8' : '#c8c8c8';
         ctx.beginPath();
-        ctx.arc(sx + Math.sin(player.action.t * 3 + i) * 8, sy - rise, 3 + i * 0.8, 0, Math.PI * 2);
+        ctx.arc(sx + Math.sin(player.action.t * 2.5 + i) * 6, sy - rise, 2.5 + i * 0.6, 0, Math.PI * 2);
         ctx.fill();
       }
-      ctx.globalAlpha = 1;
+      ctx.restore();
     }
   }
 
@@ -170,29 +171,21 @@ window.TRANSAS_Render = (() => {
     ctx.fillText('ESQUINA', x - 30, y - 6 + bob);
   }
 
+  /** Un flash blanco/rosa corto por cada toque de Z (no parpadeo continuo). */
   function drawStrobe(ctx, state) {
     if (state.strobe <= 0) return;
     const { VIEW_W: W, VIEW_H: H } = C();
-    const flash = Math.floor(state.time * 28) % 2 === 0;
+    const k = Math.min(1, state.strobe / 0.12);
     ctx.save();
-    if (flash) {
-      ctx.globalAlpha = 0.22 + state.strobe * 0.25;
-      ctx.fillStyle = '#fff';
-      ctx.fillRect(0, 0, W, H);
-      ctx.globalAlpha = 0.18;
-      ctx.fillStyle = '#ff2d95';
-      ctx.fillRect(0, 0, W, H);
-    } else {
-      ctx.globalAlpha = 0.35 * state.strobe;
-      ctx.fillStyle = '#0a0612';
-      ctx.fillRect(0, 0, W, H);
-      ctx.globalAlpha = 0.12;
-      ctx.fillStyle = '#00f5d4';
-      ctx.fillRect(0, 0, W, H);
-    }
-    ctx.globalAlpha = 0.15 * state.strobe;
-    ctx.fillStyle = '#000';
-    for (let y = 0; y < H; y += 4) ctx.fillRect(0, y, W, 1);
+    ctx.globalAlpha = 0.55 * k;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, W, H);
+    ctx.globalAlpha = 0.28 * k;
+    ctx.fillStyle = '#ff2d95';
+    ctx.fillRect(0, 0, W, H);
+    ctx.globalAlpha = 0.12 * k;
+    ctx.fillStyle = '#00f5d4';
+    ctx.fillRect(0, 0, W, H);
     ctx.restore();
   }
 

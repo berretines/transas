@@ -54,6 +54,23 @@ window.TRANSAS_UI = (() => {
     pad.setAttribute('aria-hidden', on && isTouch ? 'false' : 'true');
   }
 
+  /** Z solo visible después de mandar mensaje y antes de que llegue el transa */
+  function updateZButton(state) {
+    const pad = els().touchPad;
+    if (!pad) return;
+    const zBtn = pad.querySelector('[data-key="z"]');
+    if (!zBtn) return;
+    const showZ =
+      !!state &&
+      state.mode === 'play' &&
+      state.flags.messaged &&
+      !state.friendArrived &&
+      !state.transitioning;
+    zBtn.classList.toggle('hidden', !showZ);
+    zBtn.setAttribute('aria-hidden', showZ ? 'false' : 'true');
+    zBtn.tabIndex = showZ ? 0 : -1;
+  }
+
   function show(el, on) {
     el.classList.toggle('visible', !!on);
   }
@@ -133,6 +150,7 @@ window.TRANSAS_UI = (() => {
     }
     renderInv(state);
     updateTimer(state);
+    updateZButton(state);
   }
 
   function renderInv(state) {
@@ -231,18 +249,10 @@ window.TRANSAS_UI = (() => {
     canvas.style.height = Math.floor(cfg.VIEW_H * s) + 'px';
   }
 
-  function formatPrompt(text) {
-    if (!text || !isTouch) return text;
-    // Traducir hints de teclado a botones táctiles
-    return text
-      .replace(/^\[E\]/, '[E] Tocá')
-      .replace(/^\[C\]/, '[📞] Tocá');
-  }
-
   function setPrompt(text) {
     const e = els();
     if (text) {
-      e.prompt.textContent = formatPrompt(text);
+      e.prompt.textContent = text;
       show(e.prompt, true);
     } else {
       show(e.prompt, false);
@@ -254,6 +264,7 @@ window.TRANSAS_UI = (() => {
     isTouch,
     setTouchMode,
     showTouchPad,
+    updateZButton,
     setLoadProgress,
     showTitle,
     showPlayHud,

@@ -134,15 +134,16 @@ window.TRANSAS_Systems = (() => {
     );
   }
 
-  /** Z: efecto visual. El timer real no se toca. El jugador no lo sabe. */
+  /**
+   * Z: un flash corto cada vez que se aprieta.
+   * Solo tiene sentido después de mandar mensaje (y antes de que llegue).
+   * El timer real no se toca. El jugador no lo sabe.
+   */
   function pressZ(state) {
     if (state.mode !== 'play' || state.shopOpen) return;
-    if (!state.flags.messaged) {
-      say(state, 'VOS', 'Primero mandá mensaje al transa.');
-      return;
-    }
-    if (state.friendArrived) return;
-    state.strobe = 0.85;
+    if (!state.flags.messaged || state.friendArrived) return;
+    // un solo flash breve por toque (no strobe largo)
+    state.strobe = 0.12;
     Audio().strobe();
   }
 

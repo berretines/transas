@@ -209,7 +209,8 @@
       return;
     }
 
-    if (Input.just('e') && state.nearObj && state.nearObj.interact) {
+    // Desktop: E interactúa. Mobile: toque en el objeto (ver canvas pointer).
+    if (!UI.isTouch && Input.just('e') && state.nearObj && state.nearObj.interact) {
       state.nearObj.interact();
       if (state.dialog) UI.openDialog(state.dialog.who, state.dialog.text);
     }
@@ -223,7 +224,64 @@
       if (state.dialog) UI.openDialog(state.dialog.who, state.dialog.text);
     }
     if (Input.just('h')) state.debugHitboxes = !state.debugHitboxes;
-    // Inventario: solo click/touch en íconos (no teclas 1–4)
+  }
+
+  /** Screen (client) → coordenadas de mundo del juego */
+  function clientToWorld(clientX, clientY) {
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) return null;
+    const viewX = ((clientX - rect.left) / rect.width) * C.VIEW_W;
+    const viewY = ((clientY - rect.top) / rect.height) * C.VIEW_H;
+    return {
+      x: viewX + state.camX,
+      y: viewY,
+    };
+  }
+
+  function hitTestObject(world, o) {
+    // Caja visual + un poco de margen táctil
+    const m = 18;
+    return (
+      world.x >= o.x - m &&
+      world.x <= o.x + o.w + m &&
+      world.y >= o.y - m &&
+      world.y <= Math.max(o.y + o.h, C.FLOOR_Y) + m
+    );
+  }
+
+  /** Mobile: tocar un objeto cercano = interactuar */
+  function tryTouchInteract(clientX, clientY) {
+    if (!UI.isTouch || state.mode !== 'play' || state.transitioning) return false;
+    if (state.dialog || state.shopOpen) return false;
+    const world = clientToWorld(clientX, clientY);
+    if (!world) return false;
+
+    const scene = currentScene();
+    const objs = ScenesAPI.liveObjects(scene, state);
+    // Preferir el más cercano a los pies del PJ entre los tocados
+    let best = null;
+    let bestD = Infinity;
+    const px = player.x + player.w / 2;
+    for (const o of objs) {
+      if (!hitTestObject(world, o)) continue;
+      if (!ScenesAPI.isPlayerNear(player, o)) continue;
+      const d = Math.abs(px - (o.x + o.w / 2));
+      if (d < bestD) {
+        bestD = d;
+        best = o;
+      }
+    }
+    // Fallback: si estás cerca de algo y tocás cerca del highlight
+    if (!best && state.nearObj && hitTestObject(world, state.nearObj)) {
+      best = state.nearObj;
+    }
+    if (best && best.interact) {
+      best.interact();
+      if (state.dialog) UI.openDialog(state.dialog.who, state.dialog.text);
+      UI.updateHud(state, scene.name);
+      return true;
+    }
+    return false;
   }
 
   function syncDialogHud() {
@@ -249,6 +307,7 @@
       PlayerAPI.update(player, dt, Input, currentScene(), {
         blocked,
         inputLock: state.inputLock > 0,
+        noJump: UI.isTouch,
         onJump: () => Audio.jump(),
       });
 
@@ -275,14 +334,19 @@
       if (state.nearObj && !state.dialog && !state.shopOpen) {
         const tag = state.nearObj.isExit ? '🚪 ' : state.nearObj.pickup ? '💵 ' : '';
         const label = state.nearObj.pickup ? `$${state.nearObj.amount}` : state.nearObj.name;
-        UI.setPrompt(`[E] ${tag}${label}`);
+        UI.setPrompt(
+          UI.isTouch
+            ? `Tocá ${tag}${label}`
+            : `[E] ${tag}${label}`
+        );
       } else if (!state.dialog && state.flags.phone && !state.flags.messaged && !state.shopOpen) {
-        UI.setPrompt('[C] Mandar mensaje');
+        UI.setPrompt(UI.isTouch ? '📞 Mandar mensaje' : '[C] Mandar mensaje');
       } else {
         UI.setPrompt(null);
       }
 
       UI.updateTimer(state);
+      UI.updateZButton(state);
     } else if (state.mode === 'sceneLoad') {
       Sys.updateTimerAndFriend(state, friend, dt);
       Sys.updateFriendWalk(state, friend, dt, () => {}, () => {});
@@ -320,12 +384,22 @@
       UI.closeShop();
     });
     e.dialog.addEventListener('click', closeDialogFlow);
-    canvas.addEventListener('click', () => {
-      if (state.dialog) closeDialogFlow();
+    canvas.addEventListener('click', (ev) => {
+      if (state.dialog) {
+        closeDialogFlow();
+        return;
+      }
+      // Desktop click en objeto cercano también puede interactuar
+      if (!UI.isTouch) tryTouchInteract(ev.clientX, ev.clientY);
     });
-    // Touch en canvas también cierra diálogo
+    // Mobile: toque en el mapa = interactuar con objetos / cerrar diálogo
     canvas.addEventListener('pointerup', (ev) => {
-      if (state.dialog && ev.pointerType === 'touch') closeDialogFlow();
+      if (ev.pointerType !== 'touch' && ev.pointerType !== 'pen') return;
+      if (state.dialog) {
+        closeDialogFlow();
+        return;
+      }
+      tryTouchInteract(ev.clientX, ev.clientY);
     });
     e.soundBtn.addEventListener('click', () => {
       const on = Audio.toggle();

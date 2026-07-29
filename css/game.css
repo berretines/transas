@@ -485,58 +485,41 @@ canvas {
 
 .touch-cluster {
   position: absolute;
-  bottom: max(14px, env(safe-area-inset-bottom, 14px));
+  bottom: max(10px, env(safe-area-inset-bottom, 10px));
   display: flex;
-  gap: 12px;
+  gap: 8px;
   pointer-events: auto;
   align-items: flex-end;
 }
 
 .touch-left {
-  left: max(12px, env(safe-area-inset-left, 12px));
+  left: max(8px, env(safe-area-inset-left, 8px));
 }
 
 .touch-right {
-  right: max(12px, env(safe-area-inset-right, 12px));
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  right: max(8px, env(safe-area-inset-right, 8px));
+  flex-direction: column;
+  gap: 8px;
 }
 
 .tbtn {
-  width: 72px;
-  height: 72px;
+  width: 46px;
+  height: 46px;
   border: 2px solid #00f5d4;
-  border-radius: 18px;
+  border-radius: 12px;
   background: rgba(10, 6, 18, 0.78);
   color: #ffe66d;
   font-family: inherit;
+  font-size: 16px;
   font-weight: 700;
-  box-shadow: 3px 3px 0 rgba(255, 45, 149, 0.5);
+  box-shadow: 2px 2px 0 rgba(255, 45, 149, 0.45);
   touch-action: none;
   -webkit-user-select: none;
   user-select: none;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  padding: 4px;
-}
-
-.tbtn-ico {
-  font-size: 22px;
-  line-height: 1;
-  pointer-events: none;
-}
-
-.tbtn-lab {
-  font-size: 9px;
-  letter-spacing: 0.4px;
-  color: #00f5d4;
-  text-transform: lowercase;
-  pointer-events: none;
-  opacity: 0.95;
+  padding: 0;
 }
 
 .tbtn.active,
@@ -547,29 +530,22 @@ canvas {
 }
 
 .tbtn-move {
-  width: 76px;
-  height: 76px;
-}
-
-.tbtn-jump {
-  background: rgba(0, 245, 212, 0.2);
-  border-color: #ffe66d;
-  grid-column: 1 / -1;
-  width: 100%;
-  height: 64px;
-}
-
-.tbtn-act {
-  background: rgba(255, 230, 109, 0.2);
-  border-color: #ffe66d;
+  width: 48px;
+  height: 48px;
 }
 
 .tbtn-call {
-  background: rgba(0, 245, 212, 0.12);
+  background: rgba(0, 245, 212, 0.14);
+  font-size: 18px;
 }
 
 .tbtn-z {
+  font-size: 15px;
   opacity: 0.95;
+}
+
+.tbtn-z.hidden {
+  display: none !important;
 }
 
 /* ─── Mobile / touch layout ──────────────────────────────────── */
@@ -683,31 +659,27 @@ body.is-touch .btn {
 }
 
 body.is-touch #prompt {
-  bottom: 150px;
+  bottom: 72px;
 }
 
 body.is-touch #dialog {
-  bottom: 140px;
+  bottom: 68px;
 }
 
-/* Landscape phones: controles un poco más chicos */
+/* Landscape phones */
 @media (max-height: 420px) and (orientation: landscape) {
   body.is-touch .tbtn {
-    width: 56px;
-    height: 56px;
-    border-radius: 14px;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    font-size: 14px;
   }
   body.is-touch .tbtn-move {
-    width: 60px;
-    height: 60px;
+    width: 42px;
+    height: 42px;
   }
-  body.is-touch .tbtn-jump {
-    height: 52px;
-  }
-  body.is-touch .tbtn-ico { font-size: 18px; }
-  body.is-touch .tbtn-lab { font-size: 8px; }
-  body.is-touch #prompt { bottom: 110px; }
-  body.is-touch #dialog { bottom: 100px; min-height: 56px; }
+  body.is-touch #prompt { bottom: 58px; }
+  body.is-touch #dialog { bottom: 54px; min-height: 56px; }
   body.is-touch #invBar { top: 44px; }
   body.is-touch .inv-slot { width: 52px; height: 60px; }
 }
