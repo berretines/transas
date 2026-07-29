@@ -38,7 +38,7 @@
     return {
       say(who, text) {
         Sys.say(state, who, text);
-        UI.openDialog(who, text);
+        openDialogFromState();
       },
       onBed() {
         if (!state.flags.woke) {
@@ -70,11 +70,11 @@
       onToilet() {
         const toilet = currentScene().objects.find((o) => o.id === 'toilet');
         Sys.startPeeing(state, player, PlayerAPI, toilet);
-        UI.openDialog(state.dialog.who, state.dialog.text);
+        openDialogFromState();
       },
       onCash(obj) {
         Sys.onCash(state, obj);
-        UI.openDialog(state.dialog.who, state.dialog.text);
+        openDialogFromState();
         UI.updateHud(state, currentScene().name);
       },
       onCorner() {
@@ -133,7 +133,7 @@
         if (id === 'street' && state.friendArrived && !state.winQueued) {
           state.winQueued = true;
           Sys.say(state, 'TRANSA', 'Llegué. Traje la merca. Te estaba esperando.');
-          UI.openDialog(state.dialog.who, state.dialog.text);
+          openDialogFromState();
           setTimeout(() => winGame(), 1600);
         }
       }
@@ -181,7 +181,7 @@
     UI.closeShop();
     UI.showPlayHud(state, scenes.room.name);
     Sys.say(state, 'VOS', '¿Qué hora es…? Da igual. Estoy al pedo. Necesito el celu y merca.');
-    UI.openDialog(state.dialog.who, state.dialog.text);
+    openDialogFromState();
   }
 
   function winGame() {
@@ -189,16 +189,33 @@
     UI.showEnd();
   }
 
+  /** No cerrar el diálogo con el mismo toque que lo abrió */
+  function canCloseDialog() {
+    if (!state.dialog) return false;
+    if (state.dialogLockUntil && performance.now() < state.dialogLockUntil) return false;
+    return true;
+  }
+
   function closeDialogFlow() {
+    if (!canCloseDialog()) return;
     Sys.closeDialog(state);
     UI.closeDialog();
-    state.inputLock = 0.2;
+    state.dialogLockUntil = 0;
+    state.inputLock = 0.25;
+  }
+
+  function openDialogFromState() {
+    if (!state.dialog) return;
+    // Bloqueo anti-ghost-touch: el pointerup del mismo gesto no cierra el cartel
+    state.dialogLockUntil = performance.now() + (UI.isTouch ? 450 : 120);
+    UI.openDialog(state.dialog.who, state.dialog.text);
   }
 
   // ── Input de un frame ─────────────────────────────────────────
   function handlePlayInput() {
     if (state.dialog) {
-      if (Input.just('enter') || Input.just(' ')) closeDialogFlow();
+      // Desktop: Enter cierra. Space no (en mobile el pad usaba space para saltar).
+      if (!UI.isTouch && Input.just('enter')) closeDialogFlow();
       return;
     }
     if (state.shopOpen) {
@@ -212,16 +229,16 @@
     // Desktop: E interactúa. Mobile: toque en el objeto (ver canvas pointer).
     if (!UI.isTouch && Input.just('e') && state.nearObj && state.nearObj.interact) {
       state.nearObj.interact();
-      if (state.dialog) UI.openDialog(state.dialog.who, state.dialog.text);
+      openDialogFromState();
     }
     if (Input.just('c')) {
       Sys.tryMessage(state);
-      if (state.dialog) UI.openDialog(state.dialog.who, state.dialog.text);
+      openDialogFromState();
       UI.updateHud(state, currentScene().name);
     }
     if (Input.just('z')) {
       Sys.pressZ(state);
-      if (state.dialog) UI.openDialog(state.dialog.who, state.dialog.text);
+      openDialogFromState();
     }
     if (Input.just('h')) state.debugHitboxes = !state.debugHitboxes;
   }
@@ -277,7 +294,7 @@
     }
     if (best && best.interact) {
       best.interact();
-      if (state.dialog) UI.openDialog(state.dialog.who, state.dialog.text);
+      openDialogFromState();
       UI.updateHud(state, scene.name);
       return true;
     }
@@ -285,7 +302,7 @@
   }
 
   function syncDialogHud() {
-    if (state.dialog) UI.openDialog(state.dialog.who, state.dialog.text);
+    openDialogFromState();
     UI.updateHud(state, currentScene().name);
   }
 
@@ -319,12 +336,12 @@
         dt,
         () => {
           Sys.say(state, 'TRANSA', 'Llegué. Traje la merca. No me digas que te dormiste de nuevo.');
-          UI.openDialog(state.dialog.who, state.dialog.text);
+          openDialogFromState();
           setTimeout(() => { if (state.mode === 'play') winGame(); }, 1800);
         },
         () => {
           Sys.say(state, 'VOS', 'Creo que llegó… mejor salgo a la esquina.');
-          UI.openDialog(state.dialog.who, state.dialog.text);
+          openDialogFromState();
         }
       );
 
@@ -383,22 +400,33 @@
       state.shopOpen = false;
       UI.closeShop();
     });
-    e.dialog.addEventListener('click', closeDialogFlow);
-    canvas.addEventListener('click', (ev) => {
-      if (state.dialog) {
+    // Cerrar diálogo SOLO con el botón OK (no con el mismo touch del mapa)
+    if (e.btnCloseDialog) {
+      e.btnCloseDialog.addEventListener('pointerup', (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
         closeDialogFlow();
-        return;
-      }
-      // Desktop click en objeto cercano también puede interactuar
+      });
+      e.btnCloseDialog.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        closeDialogFlow();
+      });
+    }
+    // No cerrar al tocar el panel del diálogo (solo el botón)
+    e.dialog.addEventListener('pointerup', (ev) => {
+      ev.stopPropagation();
+    });
+
+    canvas.addEventListener('click', (ev) => {
+      // Con diálogo abierto, el mapa no hace nada (ni cierra)
+      if (state.dialog) return;
       if (!UI.isTouch) tryTouchInteract(ev.clientX, ev.clientY);
     });
-    // Mobile: toque en el mapa = interactuar con objetos / cerrar diálogo
+    // Mobile: toque en el mapa = interactuar (nunca cierra el cartel)
     canvas.addEventListener('pointerup', (ev) => {
       if (ev.pointerType !== 'touch' && ev.pointerType !== 'pen') return;
-      if (state.dialog) {
-        closeDialogFlow();
-        return;
-      }
+      if (state.dialog) return;
       tryTouchInteract(ev.clientX, ev.clientY);
     });
     e.soundBtn.addEventListener('click', () => {

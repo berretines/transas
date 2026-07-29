@@ -35,6 +35,7 @@ window.TRANSAS_UI = (() => {
       dialogWho: $('dialogWho'),
       dialogTxt: $('dialogTxt'),
       dialogSkip: $('dialogSkip'),
+      btnCloseDialog: $('btnCloseDialog'),
       prompt: $('prompt'),
       btnStart: $('btnStart'),
       btnRestart: $('btnRestart'),
@@ -195,7 +196,12 @@ window.TRANSAS_UI = (() => {
     e.dialogWho.textContent = who;
     e.dialogTxt.textContent = text;
     if (e.dialogSkip) {
-      e.dialogSkip.textContent = isTouch ? 'TOCÁ PARA SEGUIR' : 'ENTER / CLICK';
+      // Desktop: Enter. Mobile: solo el botón OK (evita cerrar con el mismo touch).
+      e.dialogSkip.style.display = isTouch ? 'none' : 'block';
+      e.dialogSkip.textContent = 'ENTER';
+    }
+    if (e.btnCloseDialog) {
+      e.btnCloseDialog.textContent = isTouch ? 'OK · CERRAR' : 'OK';
     }
     show(e.dialog, true);
   }

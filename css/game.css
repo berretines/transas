@@ -340,9 +340,10 @@ canvas {
   background: rgba(10, 6, 18, 0.94);
   border: 3px solid #ffe66d;
   box-shadow: 0 0 0 2px #ff2d95, 4px 4px 0 #00f5d4;
-  padding: 12px 14px 10px;
+  padding: 12px 14px 14px;
   display: none;
-  z-index: 10;
+  z-index: 15;
+  pointer-events: auto;
 }
 
 #dialog.visible { display: block; }
@@ -356,13 +357,39 @@ canvas {
   font-size: clamp(10px, 1.8vw, 13px);
   line-height: 1.65;
   white-space: pre-wrap;
+  margin-bottom: 12px;
+  padding-right: 8px;
 }
 #dialog .skip {
-  position: absolute;
-  right: 10px;
-  bottom: 6px;
+  display: none;
   color: #00f5d4;
   font-size: 8px;
+  margin-top: 6px;
+  text-align: right;
+}
+
+.dialog-close {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 1px;
+  padding: 12px 14px;
+  border: 2px solid #ffe66d;
+  background: #ff2d95;
+  color: #fff;
+  box-shadow: 3px 3px 0 #00f5d4;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 44px;
+}
+
+.dialog-close:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 #00f5d4;
 }
 
 /* Prompt */
@@ -664,6 +691,17 @@ body.is-touch #prompt {
 
 body.is-touch #dialog {
   bottom: 68px;
+  padding-bottom: 12px;
+}
+
+body.is-touch .dialog-close {
+  font-size: 13px;
+  padding: 14px 16px;
+  min-height: 48px;
+}
+
+body.is-touch #dialog .skip {
+  display: none !important;
 }
 
 /* Landscape phones */

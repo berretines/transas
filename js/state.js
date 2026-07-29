@@ -12,6 +12,7 @@ window.TRANSAS_State = (() => {
       camX: 0,
 
       dialog: null,          // { who, text }
+      dialogLockUntil: 0,    // anti ghost-touch al abrir cartel
       nearObj: null,
       inputLock: 0,
       transitioning: false,
